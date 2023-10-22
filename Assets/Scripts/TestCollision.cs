@@ -26,8 +26,10 @@ public class TestCollision : MonoBehaviour
 
             Debug.DrawRay(Camera.main.transform.position, ray.direction * 100, Color.red, 1f);
 
+            int layerMask = (1 << 8) | (1 << 9);
+
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, 100))
+            if (Physics.Raycast(ray, out hit, 100, layerMask))
             {
                 Debug.Log($"Raycast Camera @{hit.collider.name}");
             }
