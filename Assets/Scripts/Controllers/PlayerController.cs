@@ -1,11 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
     private float _speed = 10.0f;
 
-    bool _shouldMoveToDest = false;
     Vector3 _destination = Vector3.zero;
     Animator anim = null;
 
@@ -14,48 +14,72 @@ public class PlayerController : MonoBehaviour
         if (anim == null)
             anim = GetComponent<Animator>();
 
-        Managers.Input.KeyAction += OnKeyInput;
+        //Managers.Input.KeyAction += OnKeyInput;
         Managers.Input.MouseAction += OnMouseClicked;
     }
 
     private void OnDestroy()
     {
-        Managers.Input.KeyAction -= OnKeyInput;
+        //Managers.Input.KeyAction -= OnKeyInput;
         Managers.Input.MouseAction -= OnMouseClicked;
     }
 
     float wait_run_ratio = 0;
 
+    public enum PlayerState
+    {
+        Dead,
+        Moving,
+        Idle,
+    }
+
+    PlayerState _state = PlayerState.Idle;
+
     void Update()
     {
-        if (_shouldMoveToDest)
+        switch (_state)
         {
-            Vector3 dir = _destination - transform.position;
-            if (dir.magnitude < 0.00001f)
-            {
-                _shouldMoveToDest = false;
-            }
-            else
-            {
-                float moveDist = Mathf.Clamp(_speed * Time.deltaTime, 0, dir.magnitude);
-                transform.position += dir.normalized * moveDist;
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), 20 * Time.deltaTime);
-            }
+            case PlayerState.Dead:
+                UpdateDead();
+                break;
+            case PlayerState.Moving:
+                UpdateMoving();
+                break;
+            case PlayerState.Idle:
+                UpdateIdle();
+                break;
         }
+    }
 
-        if (_shouldMoveToDest)
+    private void UpdateIdle()
+    {
+        wait_run_ratio = Mathf.Lerp(wait_run_ratio, 0, 10.0f * Time.deltaTime);
+        anim.SetFloat("wait_run_ratio", wait_run_ratio);
+        anim.Play("WAIT_RUN");
+    }
+
+    private void UpdateMoving()
+    {
+        Vector3 dir = _destination - transform.position;
+        if (dir.magnitude < 0.00001f)
         {
-            wait_run_ratio = Mathf.Lerp(wait_run_ratio, 1, 10.0f * Time.deltaTime);
-            anim.SetFloat("wait_run_ratio", wait_run_ratio);
-            anim.Play("WAIT_RUN");
+            _state = PlayerState.Idle;
         }
         else
         {
-            wait_run_ratio = Mathf.Lerp(wait_run_ratio, 0, 10.0f * Time.deltaTime);
-            anim.SetFloat("wait_run_ratio", wait_run_ratio);
-            anim.Play("WAIT_RUN");
+            float moveDist = Mathf.Clamp(_speed * Time.deltaTime, 0, dir.magnitude);
+            transform.position += dir.normalized * moveDist;
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), 20 * Time.deltaTime);
         }
-        
+
+        wait_run_ratio = Mathf.Lerp(wait_run_ratio, 1, 10.0f * Time.deltaTime);
+        anim.SetFloat("wait_run_ratio", wait_run_ratio);
+        anim.Play("WAIT_RUN");
+    }
+
+    private void UpdateDead()
+    {
+        // Can't do anything
     }
 
     void OnKeyInput()
@@ -85,7 +109,7 @@ public class PlayerController : MonoBehaviour
             transform.position += Vector3.right * Time.deltaTime * _speed;
         }
 
-        _shouldMoveToDest = false;
+        _state = PlayerState.Moving;
     }
 
     private void OnMouseClicked(Define.MouseEvent evt)
@@ -102,7 +126,7 @@ public class PlayerController : MonoBehaviour
         if (Physics.Raycast(ray, out hit, 100, layerMask))
         {
             _destination = hit.point;
-            _shouldMoveToDest = true;
+            _state = PlayerState.Moving;
         }
     }
 }
