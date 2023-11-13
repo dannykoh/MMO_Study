@@ -4,11 +4,6 @@ using UnityEngine;
 
 public class TestCollision : MonoBehaviour
 {
-    void Start()
-    {
-
-    }
-
     void Update()
     {
         // Local <--> World <--> Viewport <--> Screen

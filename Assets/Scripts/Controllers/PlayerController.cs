@@ -16,6 +16,11 @@ public class PlayerController : MonoBehaviour
 
         //Managers.Input.KeyAction += OnKeyInput;
         Managers.Input.MouseAction += OnMouseClicked;
+
+        // Temp
+        for (int i = 0; i < 8; i++)
+            Managers.UI.ShowPopup<UI_Button>();
+
     }
 
     private void OnDestroy()
