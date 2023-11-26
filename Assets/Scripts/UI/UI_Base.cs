@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class UI_Base : MonoBehaviour
+public abstract class UI_Base : MonoBehaviour
 {
     Dictionary<Type, object[]> _objects = new Dictionary<Type, object[]>();
 
@@ -29,6 +29,8 @@ public class UI_Base : MonoBehaviour
     {
         ItemIcon,
     }
+
+    public abstract void Init();
 
     protected void Bind<T>(Type type) where T : UnityEngine.Object
     {

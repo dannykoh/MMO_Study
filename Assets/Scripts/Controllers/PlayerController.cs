@@ -16,11 +16,10 @@ public class PlayerController : MonoBehaviour
 
         //Managers.Input.KeyAction += OnKeyInput;
         Managers.Input.MouseAction += OnMouseClicked;
+        Managers.UI.ShowPopup<UI_Button>();
 
-        // Temp
-        for (int i = 0; i < 8; i++)
-            Managers.UI.ShowPopup<UI_Button>();
-
+        // Temp Inventory
+        Managers.UI.ShowSceneUI<UI_Inventory>();
     }
 
     private void OnDestroy()
