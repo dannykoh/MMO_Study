@@ -13,6 +13,9 @@ public class Managers : MonoBehaviour
     ResourceManager _resource = new ResourceManager();
     public static ResourceManager Resource { get { return Instance._resource; } }
 
+    SceneManagerEX _scene = new SceneManagerEX();
+    public static SceneManagerEX Scene { get { return Instance._scene; } }
+
     UIManager _ui = new UIManager();
     public static UIManager UI { get { return Instance._ui; } }
 
